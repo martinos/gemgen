@@ -1,7 +1,6 @@
 require 'thor/group'
 
 module Gemgen
-
   class Generator < Thor::Group
     include Thor::Actions
 
@@ -63,7 +62,7 @@ EOF
       create_file test_path + "#{gem_name}_#{test}.rb" do 
   str = <<EOF
 require '#{File.basename(helper_file, ".rb")}'
-class #{Thor::Util.camel_case(gem_name)}Test < MiniTest::Unit::TestCase
+class #{module_name}Test < MiniTest::Unit::TestCase
   def test_truth
     assert true
   end
@@ -76,6 +75,7 @@ EOF
     def debug_gem_to_Gemfile
       remove_file("#{gem_name}/Gemfile")
       template('Gemfile.tt', "#{gem_name}/Gemfile")
+      bundle
       commit "Add debug gem to Gemfile"
     end
 
@@ -92,6 +92,10 @@ EOF
       inside gem_name do 
         run "bundle install"
       end
+    end
+
+    def module_name
+      Thor::Util.camel_case(gem_name)
     end
   end
 end

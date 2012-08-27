@@ -5,8 +5,8 @@ require 'gemgen/version'
 Gem::Specification.new do |gem|
   gem.authors       = ["Martin Chabot"]
   gem.email         = ["chabotm@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Gem generator that uses bundler gem generator}
+  gem.summary       = %q{Mostly for personal use}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)

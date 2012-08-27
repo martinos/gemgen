@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/gemgen/version', __FILE__)
+$:.unshift File.expand_path('../lib', __FILE__)
+require 'gemgen/version'
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Martin Chabot"]

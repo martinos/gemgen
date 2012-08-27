@@ -15,4 +15,8 @@ Gem::Specification.new do |gem|
   gem.name          = "gemgen"
   gem.require_paths = ["lib"]
   gem.version       = Gemgen::VERSION
+  # gem.add_dependency "put dependency here"
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency "bundler", "~> 1.0"
+  gem.add_development_dependency 'minitest'
 end

@@ -7,12 +7,12 @@ module Gemgen
     # Define arguments and options
     argument :gem_name
     class_option :test_framework, :default => :mini_test
-    class_option :test_type, :default => :unit
+    class_option :test_type, :default => "unit"
 
     def self.source_root
       File.expand_path(File.dirname(__FILE__) +'/templates')
     end
-
+    
     def run_bundle_gem
       run "bundle gem #{gem_name}", :verbose => true
       commit "$> bundle gem #{gem_name}"
@@ -48,19 +48,30 @@ EOF
     end
 
     def create_test_file
-      test = options[:test_framework] == "rspec" ? :spec : :test
+      test = options[:test_type] == "spec" ? :spec : :test
       test_path = "#{gem_name}/#{test}/"
       helper_file = "#{test}_helper.rb"
       create_file  test_path + helper_file do
-        str = <<EOF
+        unit_str = <<EOF
 $:.unshift File.expand_path('..', __FILE__)
 $:.unshift File.expand_path('../../lib', __FILE__)
 require 'minitest/unit'
 require 'minitest/autorun'
 EOF
+        spec_str = <<EOF
+$:.unshift File.expand_path('..', __FILE__)
+$:.unshift File.expand_path('../../lib', __FILE__)
+require '#{gem_name}'
+require 'minitest/spec'
+require 'minitest/autorun'
+
+module SpecHelper
+end
+EOF
+        test == :spec ? spec_str : unit_str
       end
       create_file test_path + "#{gem_name}_#{test}.rb" do 
-  str = <<EOF
+      unit_str = <<EOF
 require '#{File.basename(helper_file, ".rb")}'
 
 module #{module_name}
@@ -71,6 +82,22 @@ module #{module_name}
   end 
 end
 EOF
+        spec_str = <<EOF
+require File.expand_path('../spec_helper', __FILE__)
+require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+
+include SpecHelper
+
+describe #{module_name} do
+  before do
+  end
+
+  it "should test truth" do
+    true.must_equal true
+  end
+end
+EOF
+        test == :spec ? spec_str : unit_str
       end
       commit("Create test scaffold file")
     end
@@ -99,6 +126,10 @@ EOF
 
     def module_name
       Thor::Util.camel_case(gem_name)
+    end
+    
+    def test_type
+      @test_type ||= options[:test_type].to_s == "spec" ? :spec : :test
     end
   end
 end

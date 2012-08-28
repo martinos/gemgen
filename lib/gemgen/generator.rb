@@ -62,11 +62,14 @@ EOF
       create_file test_path + "#{gem_name}_#{test}.rb" do 
   str = <<EOF
 require '#{File.basename(helper_file, ".rb")}'
-class #{module_name}Test < MiniTest::Unit::TestCase
-  def test_truth
-    assert true
-  end
-end 
+
+module #{module_name}
+  class #{module_name}Test < MiniTest::Unit::TestCase
+    def test_truth
+      assert true
+    end
+  end 
+end
 EOF
       end
       commit("Create test scaffold file")

@@ -1,6 +1,5 @@
 require 'test_helper'
 require 'gemgen/generator'
-require 'pry'
 
 module Gemgen
   class GemgenTest < MiniTest::Unit::TestCase
@@ -14,9 +13,10 @@ module Gemgen
     def test_that_minitest_unit_tests_runs
       gem_name = 'minitest_unit'
       Dir.chdir(tmp_dir) do |dir|
-        @cli = Gemgen::Generator.new([gem_name])
+        @cli = Generator.new([gem_name])
         @cli.invoke_all
-        assert(File.exist? 'minitest_test')
+        
+        assert(File.exist? 'minitest_unit')
 
         Dir.chdir(gem_name) do
           output = `bundle exec rake`
@@ -28,7 +28,7 @@ module Gemgen
     def test_that_minitest_spec_tests_runs
       gem_name = 'minitest_spec'
       Dir.chdir(tmp_dir) do |dir|
-        @cli = Gemgen::Generator.new([gem_name], :test_type => "spec")
+        @cli = Generator.new([gem_name], :test_type => "spec")
         @cli.invoke_all
         assert(File.exist? 'minitest_spec')
         Dir.chdir(gem_name) do

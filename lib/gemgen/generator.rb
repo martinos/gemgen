@@ -52,42 +52,10 @@ EOF
       test_path = "#{gem_name}/#{test}/"
       helper_file = "#{test}_helper.rb"
       create_file  test_path + helper_file do
-        unit_str = <<EOF
-$:.unshift File.expand_path('..', __FILE__)
-$:.unshift File.expand_path('../../lib', __FILE__)
-require 'minitest/unit'
-require 'minitest/autorun'
-EOF
-        test == :spec ? spec_helper_content(gem_name) : unit_str
+        test == :spec ? spec_helper_content(gem_name) : test_helper_content
       end
       create_file test_path + "#{gem_name}_#{test}.rb" do 
-      unit_str = <<EOF
-require '#{File.basename(helper_file, ".rb")}'
-
-module #{module_name}
-  class #{module_name}Test < MiniTest::Unit::TestCase
-    def test_truth
-      assert true 
-    end
-  end 
-end
-EOF
-        spec_str = <<EOF
-require File.expand_path('../spec_helper', __FILE__)
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-
-include SpecHelper
-
-describe #{module_name} do
-  before do
-  end
-
-  it "should test truth" do
-    true.must_equal true
-  end
-end
-EOF
-        test == :spec ? spec_str : unit_str
+        test == :spec ? spec_file_content(module_name) : test_file_content(module_name, helper_file)
       end
       commit("Create test scaffold file")
     end
@@ -131,6 +99,47 @@ require 'minitest/spec'
 require 'minitest/autorun'
 
 module SpecHelper
+end
+EOF
+    end
+    
+    def test_helper_content
+      _ = <<EOF
+$:.unshift File.expand_path('..', __FILE__)
+$:.unshift File.expand_path('../../lib', __FILE__)
+require 'minitest/unit'
+require 'minitest/autorun'
+EOF
+    end
+    
+    def test_file_content(module_name, helper_file)
+      _ = <<EOF
+require '#{File.basename(helper_file, ".rb")}'
+
+module #{module_name}
+  class #{module_name}Test < MiniTest::Unit::TestCase
+    def test_truth
+      assert true 
+    end
+  end 
+end
+EOF
+    end
+    
+    def spec_file_content(module_name)
+      _ = <<EOF
+require File.expand_path('../spec_helper', __FILE__)
+require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+
+include SpecHelper
+
+describe #{module_name} do
+  before do
+  end
+
+  it "should test truth" do
+    true.must_equal true
+  end
 end
 EOF
     end

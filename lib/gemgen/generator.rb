@@ -58,17 +58,7 @@ $:.unshift File.expand_path('../../lib', __FILE__)
 require 'minitest/unit'
 require 'minitest/autorun'
 EOF
-        spec_str = <<EOF
-$:.unshift File.expand_path('..', __FILE__)
-$:.unshift File.expand_path('../../lib', __FILE__)
-require '#{gem_name}'
-require 'minitest/spec'
-require 'minitest/autorun'
-
-module SpecHelper
-end
-EOF
-        test == :spec ? spec_str : unit_str
+        test == :spec ? spec_helper_content(gem_name) : unit_str
       end
       create_file test_path + "#{gem_name}_#{test}.rb" do 
       unit_str = <<EOF
@@ -102,11 +92,11 @@ EOF
       commit("Create test scaffold file")
     end
 
-    def debug_gem_to_Gemfile
+    def debug_gems_to_Gemfile
       remove_file("#{gem_name}/Gemfile")
       template('Gemfile.tt', "#{gem_name}/Gemfile")
       bundle
-      commit "Add debug gem to Gemfile"
+      commit "Add debug gems to Gemfile"
     end
 
     private
@@ -130,6 +120,19 @@ EOF
     
     def test_type
       @test_type ||= options[:test_type].to_s == "spec" ? :spec : :test
+    end
+    
+    def spec_helper_content(gem_name)
+      _ = <<EOF
+$:.unshift File.expand_path('..', __FILE__)
+$:.unshift File.expand_path('../../lib', __FILE__)
+require '#{gem_name}'
+require 'minitest/spec'
+require 'minitest/autorun'
+
+module SpecHelper
+end
+EOF
     end
   end
 end

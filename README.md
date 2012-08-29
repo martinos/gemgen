@@ -1,4 +1,4 @@
-# Gemgen
+# Gemgen[![Build Status](https://secure.travis-ci.org/martinos/gemgen.png?branch=master)](http://travis-ci.org/martinos/gemgen)
 
 TODO: Write a gem description
 

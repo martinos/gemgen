@@ -47,15 +47,23 @@ EOF
       commit "Add test tasks"
     end
 
-    def create_test_file
-      test = options[:test_type] == "spec" ? :spec : :test
-      test_path = "#{gem_name}/#{test}/"
-      helper_file = "#{test}_helper.rb"
-      create_file  test_path + helper_file do
-        test == :spec ? spec_helper_content(gem_name) : test_helper_content
-      end
-      create_file test_path + "#{gem_name}_#{test}.rb" do 
-        test == :spec ? spec_file_content(module_name) : test_file_content(module_name, helper_file)
+    def create_test_files
+      if options[:test_type] == "spec"
+        test_path = "#{gem_name}/spec"
+        create_file  test_path + "/spec_helper.rb" do
+          spec_helper_content(gem_name)
+        end 
+        create_file test_path + "/#{gem_name}_spec.rb" do 
+          spec_file_content(module_name)
+        end
+      else
+        test_path = "#{gem_name}/test"
+        create_file  test_path + "/test_helper.rb" do
+          test_helper_content
+        end 
+        create_file test_path + "/#{gem_name}_test.rb" do 
+          test_file_content(module_name, 'test_helper.rb')
+        end
       end
       commit("Create test scaffold file")
     end

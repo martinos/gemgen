@@ -20,8 +20,6 @@ Or install it yourself as:
 
     $ gemgen gem_name
 
-# This is a slack test
-
 ## Contributing
 
 1. Fork it
